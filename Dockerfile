@@ -6,3 +6,7 @@ RUN apk --update add supervisor nodejs bash git openssl && \
     npm install npm -g && \
     npm install --global yarn && \
     composer global require "hirak/prestissimo:^0.3"
+
+# Install mongo
+RUN pecl install mongodb
+RUN echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongodb.ini
