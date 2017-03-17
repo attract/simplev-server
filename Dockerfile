@@ -2,16 +2,22 @@ FROM attractgrouphub/alpine-php7-nginx-composer:7.1.1
 
 MAINTAINER Amondar
 
+RUN apk --update add supervisor nodejs bash git openssl-dev g++ autoconf make && \
+    npm install npm -g && \
+    npm install --global yarn && \
+    composer global require "hirak/prestissimo:^0.3"
+
+# Install mongo
+RUN pecl install mongodb
+RUN echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongodb.ini
+
+
 ENV VERSION=v7.7.3 NPM_VERSION=4
 
-RUN apk --update add supervisor bash git openssl-dev g++ autoconf make && \
-    composer global require "hirak/prestissimo:^0.3" && \
+# For base builds
+ENV CONFIG_FLAGS="--fully-static --without-npm" DEL_PKGS="libstdc++" RM_DIRS=/usr/include
 
-    # Install mongo
-    pecl install mongodb && \
-    echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongodb.ini
-
-RUN apk add --no-cache gcc python linux-headers binutils-gold gnupg libstdc++ && \
+RUN apk add --no-cache curl make gcc g++ python linux-headers binutils-gold gnupg libstdc++ && \
   gpg --keyserver ha.pool.sks-keyservers.net --recv-keys \
     94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
     FD3A5288F042B6850C66B31F09FE44734EB7990E \
@@ -33,9 +39,7 @@ RUN apk add --no-cache gcc python linux-headers binutils-gold gnupg libstdc++ &&
     npm install -g npm@${NPM_VERSION} && \
     find /usr/lib/node_modules/npm -name test -o -name .bin -type d | xargs rm -rf; \
   fi && \
-  apk del make gcc g++ python linux-headers binutils-gold gnupg ${DEL_PKGS} && \
+  apk del curl make gcc g++ python linux-headers binutils-gold gnupg ${DEL_PKGS} && \
   rm -rf ${RM_DIRS} /node-${VERSION}* /usr/share/man /tmp/* /var/cache/apk/* \
     /root/.npm /root/.node-gyp /root/.gnupg /usr/lib/node_modules/npm/man \
-    /usr/lib/node_modules/npm/doc /usr/lib/node_modules/npm/html /usr/lib/node_modules/npm/scripts && \
-
-    npm install --global yarn
+    /usr/lib/node_modules/npm/doc /usr/lib/node_modules/npm/html /usr/lib/node_modules/npm/scripts
