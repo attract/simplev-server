@@ -5,8 +5,6 @@ MAINTAINER Amondar
 ENV VERSION=v7.7.3 NPM_VERSION=4
 
 RUN apk --update add supervisor bash git openssl-dev g++ autoconf make && \
-    npm install npm -g && \
-    npm install --global yarn && \
     composer global require "hirak/prestissimo:^0.3" && \
 
     # Install mongo
@@ -38,4 +36,6 @@ RUN apk add --no-cache gcc python linux-headers binutils-gold gnupg libstdc++ &&
   apk del curl make gcc g++ python linux-headers binutils-gold gnupg ${DEL_PKGS} && \
   rm -rf ${RM_DIRS} /node-${VERSION}* /usr/share/man /tmp/* /var/cache/apk/* \
     /root/.npm /root/.node-gyp /root/.gnupg /usr/lib/node_modules/npm/man \
-    /usr/lib/node_modules/npm/doc /usr/lib/node_modules/npm/html /usr/lib/node_modules/npm/scripts
+    /usr/lib/node_modules/npm/doc /usr/lib/node_modules/npm/html /usr/lib/node_modules/npm/scripts && \
+
+    npm install --global yarn
